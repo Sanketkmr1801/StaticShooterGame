@@ -5,7 +5,8 @@ using System;
 
 public class Player : MonoBehaviour
 {
-    [SerializeField] private float _speed = 10.0f;
+    [SerializeField] private float _speed = 10.0f, _fireRate = 0.1f;
+    private float  _nextFire = 0;
     public float horizontalInput, verticalInput;
     [SerializeField] private GameObject _laser;
     void Start()
@@ -21,14 +22,22 @@ public class Player : MonoBehaviour
     }
 
     void fireLaser() {
-            if(Input.GetMouseButtonDown(0)) {
+        if(Input.GetMouseButton(0) && Time.time > _nextFire) {   
+            //Get the mouse position
+            //Offset it by difference between object and camera z
+            //Get mouse world position
             Vector3 mousePos = Input.mousePosition;
-            mousePos.z = 10;
+            mousePos.z = transform.position.z - Camera.main.transform.position.z;
             Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(mousePos);
+            
             GameObject newLaser = Instantiate(_laser, transform.position, transform.rotation);
+            
+            //Get angle between the x axis of object and direction between the object and mouse world position
             float angle = Vector3.SignedAngle(new Vector3(0, Math.Abs(transform.position.y), 0), mouseWorldPosition - transform.position, new Vector3(0, 0, 1));
-            Debug.Log(angle);
             newLaser.transform.Rotate(new Vector3(0, 0, angle));
+            
+            //cool down system for laser
+            _nextFire = Time.time + _fireRate;
         }
     }
 

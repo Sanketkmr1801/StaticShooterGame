@@ -20,7 +20,12 @@ public class Laser : MonoBehaviour
     void move() {
         transform.Translate(Vector3.up * _speed * Time.deltaTime);
         if(transform.position.x > 12f || transform.position.x < -12f || transform.position.y > 8f || transform.position.y < -8f) {
-            Destroy(this.gameObject);
+            Transform laserParent = transform.parent;
+            if(laserParent != null) {
+                Destroy(laserParent.gameObject);
+            } else {
+                Destroy(this.gameObject);
+            }
         }
     }
     public float getDamage() {

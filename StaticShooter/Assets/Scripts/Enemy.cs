@@ -4,13 +4,18 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    [SerializeField] private Transform player;
+    [SerializeField] private Transform _player;
     [SerializeField] private float _health = 100f, _speed = 4f, _damage = 25f;
     private static float _number = 0f;
     [SerializeField] private float _enemyNumber;
     void Start()
     {
-        player = GameObject.Find("Player").transform;
+        if(Cache.Contains("Player")) {
+            _player = Cache.Get("Player");
+        } else {
+            _player = GameObject.Find("Player").transform;
+            Cache.Put("Player", _player);
+        }
         _number++;
         _enemyNumber = _number;
     }
@@ -27,11 +32,10 @@ public class Enemy : MonoBehaviour
         } else {
             Destroy(this.gameObject);
         }
-        Debug.Log(_health);
     }
 
     void move() {
-        if(player != null) transform.LookAt(player);
+        if(_player != null) transform.LookAt(_player);
         transform.Translate(Vector3.forward * Time.deltaTime * _speed);
     }
 
@@ -45,7 +49,7 @@ public class Enemy : MonoBehaviour
         if(other.tag == "Laser") {
             Laser incomingLaser = other.GetComponent<Laser>();
             damageEnemy(incomingLaser.getDamage());
-            Destroy(other.gameObject);
+            other.GetComponent<MeshRenderer>().enabled = false;
         }
 
         if(other.tag == "Enemy") {
@@ -64,6 +68,5 @@ public class Enemy : MonoBehaviour
         _speed += speed * 0.5f;
         _damage += damage;
         _health += health;
-        Debug.Log(_health);
     }
 }

@@ -5,7 +5,7 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
     [SerializeField] private Transform _player;
-    [SerializeField] private float _health = 100f, _speed = 4f, _damage = 25f;
+    [SerializeField] private float _health = 100f, _speed = 4f, _damage = 25f, _score = 10f;
     private static float _number = 0f;
     [SerializeField] private float _enemyNumber;
     void Start()
@@ -30,6 +30,7 @@ public class Enemy : MonoBehaviour
         if(damage < _health) {
             _health -= damage;
         } else {
+            _player.GetComponent<Player>().addScore(_score);
             Destroy(this.gameObject);
         }
     }

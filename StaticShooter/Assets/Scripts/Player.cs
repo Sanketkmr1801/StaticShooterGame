@@ -6,15 +6,35 @@ using System;
 public class Player : MonoBehaviour
 {
     [SerializeField] private float _speed = 10.0f, _fireRate = 0.1f;
-    private float  _nextFire = 0, _health = 100, _shieldDamageAbsorbMultiplier = 0;
+    private float  _nextFire = 0, _health, _maxHealth = 100f, _shieldDamageAbsorbMultiplier = 0, _score = 0;
     public float horizontalInput, verticalInput;
     [SerializeField] private GameObject _laserPrefab, _tripleLaserPrefab;
+    private UIManager _uiManager;
     private SpawnManager _spawnManager;
     private bool _isTripleLaserActive = false, _isSpeedActive = false, _isShieldActive = false;
     void Start()
     {
+        _health = _maxHealth;
         transform.position = new Vector3(0, 0, 0);
-        _spawnManager = GameObject.Find("SpawnManager").GetComponent<SpawnManager>();
+        if(Cache.Contains("SpawnManager")) {
+            _spawnManager = Cache.Get("SpawnManager").GetComponent<SpawnManager>();
+        } else {
+            _spawnManager = GameObject.Find("SpawnManager").GetComponent<SpawnManager>();
+            Cache.Put("SpawnManager", _spawnManager.transform);
+        }
+        if(Cache.Contains("UIManager")) {
+            _uiManager = Cache.Get("UIManager").GetComponent<UIManager>();
+        } else {
+            _uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
+            Cache.Put("UIManager", _uiManager.transform);
+        }
+
+        if(_uiManager == null) {
+            Debug.Log("BROOOJFWUIABIFUBWA");
+        }
+
+        //ui startups
+        _uiManager.healthSystem(_health, _maxHealth);
     }
 
     void Update()
@@ -24,6 +44,14 @@ public class Player : MonoBehaviour
 
     }
 
+    public void addScore(float score) {
+        _score += score;
+        _uiManager.scoreSystem(_score);
+    }
+
+    public float getScore() {
+        return _score;
+    }
     public void activateShield(float time, float damageaAsorbMultiplier) {
         _isShieldActive = true;
         _shieldDamageAbsorbMultiplier = damageaAsorbMultiplier;
@@ -46,8 +74,10 @@ public class Player : MonoBehaviour
             if(_spawnManager != null) {
                 _spawnManager.OnPlayerDeath();
             }
+            _uiManager.gameOver();
         }  
-    
+
+        _uiManager.healthSystem(_health, _maxHealth);
         Debug.Log(_health);
     }
     void fireLaser() {

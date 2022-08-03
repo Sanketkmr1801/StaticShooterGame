@@ -1,5 +1,6 @@
 using System.Collections;
-using System.Collections.Generic;
+using System.Text;
+using UnityEngine.Networking;
 using UnityEngine;
 using System;
 
@@ -12,8 +13,11 @@ public class Player : MonoBehaviour
     private UIManager _uiManager;
     private SpawnManager _spawnManager;
     private bool _isTripleLaserActive = false, _isSpeedActive = false, _isShieldActive = false;
+    private DatabaseManager _databaseManager;
     void Start()
     {
+
+
         _health = _maxHealth;
         transform.position = new Vector3(0, 0, 0);
         if(Cache.Contains("SpawnManager")) {
@@ -28,13 +32,16 @@ public class Player : MonoBehaviour
             _uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
             Cache.Put("UIManager", _uiManager.transform);
         }
-
-        if(_uiManager == null) {
-            Debug.Log("BROOOJFWUIABIFUBWA");
+        if(Cache.Contains("DatabaseManager")) {
+            _databaseManager = Cache.Get("DatabaseManager").GetComponent<DatabaseManager>();
+        } else {
+            _databaseManager = GameObject.Find("DatabaseManager").GetComponent<DatabaseManager>();
+            Cache.Put("DatabaseManager", _databaseManager.transform);
         }
 
         //ui startups
         _uiManager.healthSystem(_health, _maxHealth);
+
     }
 
     void Update()
@@ -74,6 +81,7 @@ public class Player : MonoBehaviour
             if(_spawnManager != null) {
                 _spawnManager.OnPlayerDeath();
             }
+            _databaseManager.addScore("anonymus", _score);
             _uiManager.gameOver();
         }  
 
@@ -162,4 +170,5 @@ public class Player : MonoBehaviour
     public bool isShieldActive() {
         return _isShieldActive;
     }
+
 }

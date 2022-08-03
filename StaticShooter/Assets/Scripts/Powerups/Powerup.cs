@@ -20,13 +20,14 @@ public class Powerup : MonoBehaviour
 
     private void OnTriggerEnter(Collider other) {
         if(other.tag == "Player") {
-            Player player = _player.GetComponent<Player>();
             if(_player != null) {
-                if(_powerupType == "TripleLaser") activateTripleLaserPowerup(player);
-                if(_powerupType == "Speed") activateSpeedPowerup(player);
-                if(_powerupType == "Shield") activateShieldPowerup(player);
-            }
-
+                Player player = _player.GetComponent<Player>();
+                if(_player != null) {
+                    if(_powerupType == "TripleLaser") activateTripleLaserPowerup(player);
+                    if(_powerupType == "Speed") activateSpeedPowerup(player);
+                    if(_powerupType == "Shield") activateShieldPowerup(player);
+                }
+            }   
         }
     }
 

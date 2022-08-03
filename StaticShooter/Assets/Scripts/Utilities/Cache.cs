@@ -15,4 +15,8 @@ public class Cache : MonoBehaviour
     public static bool Contains(string key) {
         return cache.ContainsKey(key);
     }
+
+    public static void resetCache() {
+        cache = new Dictionary<string, Transform>();
+    }
 }
